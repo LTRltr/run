@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="ajax.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+        
+        body {
+            overflow-x: hidden
+        }
+        
+        div {
+            text-align: center
+        }
+        
+        .box {
+            height: 600px;
+            border: 5px solid #333;
+            position: relative;
+        }
+        
+        .p1 {
+            height: 200px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .p2 {
+            height: 200px;
+            position: absolute;
+            left: 0;
+            top: 200px;
+        }
+        
+        button {
+            height: 50px;
+            width: 200px;
+            border: 1px solid red;
+            background: rgb(147, 235, 6);
+            position: absolute;
+            left: 45%;
+            bottom: 0;
+        }
+        /* span{display: block;height: 100%;width: 10px;background: red;margin-left: 1150px;word-wrap:break-word ;} */
+        
+        #xueyou,
+        #jie {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            font-weight: bolder
+        }
+        
+        #xueyou img {
+            width: 100%;
+            height: 100%;
+            transition: all 0.5s;
+            margin-top: 10px;
+        }
+        
+        #jie img {
+            width: 100%;
+            height: 100%;
+            transition: all 0.5s;
+            margin-top: 10px;
+        }
+        
+        #xueyou {
+            left: 10%;
+            bottom: 10%;
+            color: lightsalmon
+        }
+        
+        #jie {
+            left: 80%;
+            bottom: 10%;
+            color: blue
+        }
+        
+        .box>div:hover img {
+            transform: scale(1.1);
+            box-shadow: 1px 1px 1px 1px;
+        }
+        
+        #gold {
+            text-align: center;
+            font-size: 3em;
+        }
+        
+        #rest {
+            color: rgb(248, 233, 24)
+        }
+        
+        p {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <img src="img/p1.JPG" alt="" class="p1">
+        <img src="img/p2.jpg" alt="" class="p2">
+        <button>开始</button>
+        <div id="xueyou">支持学友<img src="img/p1.JPG" alt="">      <!-- 两个投注功能 -->
+            <p>0</p>
+        </div>
+        <div id="jie">支持劫<img src="img/p2.JPG" alt="">
+            <p>0</p>
+        </div>
+    </div>
+    <div id="gold">金币余额: <span id="rest">100</span></div>       <!-- 余额 -->
+</body>
+
+</html>
+<script>
+    var btn = document.querySelector('button');
+    var p1 = document.getElementsByClassName('p1')[0];
+    var p2 = document.getElementsByClassName('p2')[0];
+    var xueyou = document.getElementById('xueyou');
+    var jie = document.getElementById('jie');
+    var rest = document.getElementById('rest');
+
+    var intercal1 = -1;             //三个定时器
+    var intercal2 = -1;
+    var intercal3 = -1;
+
+    function reset() {              //用于重置
+        p1.src = "img/p1.jpg";
+        p1.style.left = '0';
+        p2.style.left = '0';
+        i = '0';
+        j = '0';
+        clearInterval(intercal1);
+        clearInterval(intercal2);
+        xueyou.children[1].innerHTML = 0;
+        jie.children[1].innerHTML = 0;
+        btn.disabled = false;
+
+    }
+
+    xueyou.addEventListener('click', function() {            //下注的点击事件
+        if (rest.innerHTML > 0) {
+            rest.innerHTML -= 10;               //余额减10
+            this.children[1].innerHTML = parseInt(this.children[1].innerHTML) + 10;
+            //投注的钱加10
+        } else {
+            alert('没钱了，快充钱');
+        }
+    })
+    jie.addEventListener('click', function() {
+        if (rest.innerHTML > 0) {
+            rest.innerHTML -= 10;
+            this.children[1].innerHTML = parseInt(this.children[1].innerHTML) + 10;
+        } else {
+            alert('没钱了，快充钱');
+        }
+    })
+
+    btn.addEventListener('click', function() {
+        btn.disabled = true;                //按钮点击后不能再点，防止鬼畜
+        var i = 0,
+            j = 0;
+        p1.src = "img/p1.gif";
+
+        intercal1 = setInterval(() => {             //第一个定时器，每秒前进100px
+            i += 1;
+            p1.style.left = i + "px";
+        }, 10);
+        intercal2 = setInterval(() => {             //第二个定时器，每秒前进300px或后退100px
+            var num = Math.round(Math.random());                
+            if (num) {
+                j += 30;
+                p2.style.left = j + "px";
+            } else {
+                j -= 10;
+                p2.style.left = j + "px";
+            }
+        }, 100);
+    })
+    intercal3 = setInterval(() => {             //第三个定时器，判定胜负
+        if (p1.style.left.replace('px', '') > 1400) {
+            alert('学友赢了');
+            rest.innerHTML = parseInt(rest.innerHTML) + parseInt(xueyou.children[1].innerHTML) * 2;
+            //将投注的钱乘以2返回给余额，美滋滋
+            reset();
+        } else if (p2.style.left.replace('px', '') > 1400) {
+            alert('劫赢了');
+            rest.innerHTML = parseInt(rest.innerHTML) + parseInt(jie.children[1].innerHTML) * 2;
+            reset();
+        }
+    }, 50);
+</script>
